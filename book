@@ -1,0 +1,49 @@
+#!/bin/bash
+# book - Open a book based on a search pattern
+# TODO - tmp files are not deleter since the htread waits for mupdf to finish
+# and doesn't delete the file if it recieves a SIGTERM
+
+books_dir="$HOME/documents/books/"
+n_match=""
+tmp_file=""
+
+open() {
+	(mupdf "$1")
+}
+
+usage() {
+	echo "Usage: book [Pattern]"
+}
+
+# Let the user interactivaly choose a book
+inter_choice() {
+	i=0
+	while read book; do
+		printf "$i\t" && basename "$book"
+		((i+=1))
+	done < $tmp_file
+	
+	read -p "> " choice
+
+	((choice+=1))	
+	open "$(cat "$tmp_file" | head -n $choice | tail -n 1)"
+}
+
+if [[ $# -eq 1 ]] ; then
+	tmp_file="$(mktemp)"
+	find $books_dir -type f | grep -Ei "($1)" > $tmp_file
+	n_match=$(wc -l < $tmp_file)
+	
+	if [[ $n_match -eq 0 ]] ; then
+		echo "No match"
+	elif [[ $n_match -eq 1 ]] ; then
+		open "$(cat /tmp/book)"
+	else
+		inter_choice
+	fi
+	
+	rm $tmp_file
+else
+	usage
+fi 
+

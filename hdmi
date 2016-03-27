@@ -1,0 +1,19 @@
+#!/bin/bash
+# hdmi - active or deactivate the external display
+
+disp="LVDS1"
+ext="HDMI1"
+
+if [ $# -eq 0 ] ; then
+	if (xrandr | grep -q "$ext connected") ; then
+		xrandr --output $disp --auto --output $ext --auto --above $disp
+	else
+		xrandr --output $disp --auto --output $ext --off
+	fi
+elif [ $# -eq 1 -a $1 = "on" ] ; then
+	xrandr --output $disp --auto --output $ext --auto --above $disp
+elif [ $# -eq 1 -a $1 = "off" ] ; then
+	xrandr --output $disp --auto --output $ext --off
+else
+	echo "Usage: hdmi [on|off]"
+fi
