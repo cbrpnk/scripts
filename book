@@ -1,8 +1,7 @@
 #!/bin/bash
 # book - Open a book based on a search pattern
-# TODO - tmp files are not deleter since the htread waits for mupdf to finish
-# and doesn't delete the file if it recieves a SIGTERM
 
+query=""
 books_dir="$HOME/documents/books/"
 n_match=""
 tmp_file=""
@@ -24,25 +23,28 @@ inter_choice() {
 	done < $tmp_file
 	
 	read -p "> " choice
+	if [ $choice == "q" ] ; then
+		return
+	fi
 
 	((choice+=1))	
-	open "$(cat "$tmp_file" | head -n $choice | tail -n 1)"
+	open "$(head -n $choice "$tmp_file" | tail -n 1)"
 }
 
 if [[ $# -eq 1 ]] ; then
+	query=$1
 	tmp_file="$(mktemp)"
+	trap "rm $tmp_file" SIGINT SIGTERM
 	find $books_dir -type f | grep -Ei "($1)" > $tmp_file
 	n_match=$(wc -l < $tmp_file)
 	
 	if [[ $n_match -eq 0 ]] ; then
 		echo "No match"
 	elif [[ $n_match -eq 1 ]] ; then
-		open "$(cat /tmp/book)"
+		open "$(cat $tmp_file)"
 	else
 		inter_choice
 	fi
-	
-	rm $tmp_file
 else
 	usage
 fi 

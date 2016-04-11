@@ -1,0 +1,23 @@
+#!/bin/bash
+#update_ip: Compare local ip to domain ip, update DNS record on mismatch
+
+CLOUDFLARE_EMAIL=''
+CLOUDFLARE_KEY=''
+DOMAIN=''
+DOMAIN_ID=''
+ZONE_NAME=''
+ZONE_ID=''
+
+
+domain_ip=$(host $DOMAIN | head -n 1 | grep -Eo '[0-9\.]*$')
+local_ip=$(curl -s icanhazip.com)
+
+if [[ -n "$local_ip" && "$domain_ip" != "$local_ip" ]] ; then
+
+	curl -sX PUT "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$DOMAIN_ID" \
+	-H "X-Auth-Email: $CLOUDFLARE_EMAIL" \
+	-H "X-Auth-Key: $CLOUDFLARE_KEY" \
+	-H "Content-Type: application/json" \
+	--data '{"id":"'$DOMAIN_ID'","type":"A","name":"'$DOMAIN'","content":"'$local_ip'","proxiable":true,"proxied":false,"locked":false,"zone_id":"'$ZONE_ID'","zone_name":"'$ZONE_NAME'"}' > /dev/null
+
+fi
