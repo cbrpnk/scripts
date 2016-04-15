@@ -1,4 +1,0 @@
-#!/bin/bash
-# vol - easy volume control
-
-amixer set Master ${1}0% > /dev/null
