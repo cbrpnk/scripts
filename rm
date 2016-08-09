@@ -1,4 +1,14 @@
 #!/bin/bash
 # rm - Safety wrapper for rm
 
-# TODO
+
+
+# Remove switches or remap them to mv switches
+
+# The .rm folder should be deleted using a timer
+#mv $@ $HOME/.rm/
+
+
+for i in $(seq $#) ; do
+	echo $($i)
+done

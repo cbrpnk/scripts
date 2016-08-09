@@ -6,16 +6,16 @@ books_dir="$HOME/documents/books/"
 n_match=""
 tmp_file=""
 
-open {
+function open {
 	(mupdf "$1")
 }
 
-usage {
+function usage {
 	echo "Usage: book [Pattern]"
 }
 
 # Let the user interactivaly choose a book
-inter_choice {
+function inter_choice {
 	i=0
 	while read book; do
 		printf "$i\t" && basename "$book"
