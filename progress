@@ -1,0 +1,8 @@
+#!/bin/bash
+# Track the progress of a file copy / move
+
+while true; do
+	lsof | grep $1 | awk '{print $7}'
+	sleep 1
+done
+
